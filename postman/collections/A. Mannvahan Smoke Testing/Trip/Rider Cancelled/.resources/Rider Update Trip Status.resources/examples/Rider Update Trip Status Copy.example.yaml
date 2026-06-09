@@ -1,0 +1,128 @@
+$kind: http-example
+request:
+  url: "{{baseurl}}/trips_new/25369263-f11a-4ed1-b128-bdc4cd3f8ef8/status"
+  method: PUT
+  headers:
+    Authorization: "{{RIDER_TOKEN}}"
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+          "status": "CANCELLED"
+      }
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    vary: accept-encoding
+    Content-Encoding: gzip
+    Content-Type: application/json
+    Transfer-Encoding: chunked
+    Date: Fri, 15 May 2026 09:25:55 GMT
+    Keep-Alive: timeout=90
+    Connection: keep-alive
+  body:
+    type: text
+    content: |-
+      {
+          "success": true,
+          "statusCode": 200,
+          "data": {
+              "id": "25369263-f11a-4ed1-b128-bdc4cd3f8ef8",
+              "tripRequestNew": {
+                  "id": "3bb457ee-e4e5-43e9-af1d-fb648cc6d814",
+                  "startAddress": {
+                      "shortName": "aadhar nagar",
+                      "geoLocation": {
+                          "lat": 20.918876688414926,
+                          "lng": 74.75512973052511
+                      }
+                  },
+                  "endAddress": {
+                      "shortName": "bus stand",
+                      "geoLocation": {
+                          "lat": 20.906394036221187,
+                          "lng": 74.76976678092302
+                      }
+                  },
+                  "vehicleType": "AUTO",
+                  "gmapEncodedPolyline": "yut~BgsggMpATf@aEhB?nBJb@uEN_Aj@{B`A{Cr@yB`@cB@IfDdAv@V`F^xBFnI`@`@{DLm@LOlEgD`@{DJ}AR{EPeINkBT_B@URmARk@Tm@NeB@w@h@eIjDRtCC|CE",
+                  "estimatedDistance": 2672,
+                  "estimatedTime": 440,
+                  "estimatedFirstMile": 1000,
+                  "fareEstimatesNew": [
+                      {
+                          "id": "300279a6-e46e-4969-8866-fa526a9557e8",
+                          "vehicleType": "AUTO",
+                          "distanceFare": 5344,
+                          "timeFare": 93,
+                          "firstMileFare": 1500,
+                          "platformFee": 300,
+                          "serviceCharge": 1041,
+                          "nightCharge": 3469,
+                          "discount": 0,
+                          "minEstimatedFare": 11747,
+                          "maxEstimatedFare": 11747,
+                          "nightFareMultiplier": 1.5,
+                          "driverEstimatedPayable": 10266,
+                          "createdAtIST": "2026-05-15T14:55:19.04235",
+                          "updatedAtIST": "2026-05-15T14:55:19.04235",
+                          "platformFees": 300,
+                          "trip_request_id": "3bb457ee-e4e5-43e9-af1d-fb648cc6d814"
+                      }
+                  ],
+                  "createdAtIST": "2026-05-15T14:55:18.970687",
+                  "updatedAtIST": "2026-05-15T14:55:19.043799"
+              },
+              "fareEstimateNew": {
+                  "id": "300279a6-e46e-4969-8866-fa526a9557e8",
+                  "vehicleType": "AUTO",
+                  "distanceFare": 5344,
+                  "timeFare": 93,
+                  "firstMileFare": 1500,
+                  "platformFee": 300,
+                  "serviceCharge": 1041,
+                  "nightCharge": 3469,
+                  "discount": 0,
+                  "minEstimatedFare": 11747,
+                  "maxEstimatedFare": 11747,
+                  "nightFareMultiplier": 1.5,
+                  "driverEstimatedPayable": 10266,
+                  "createdAtIST": "2026-05-15T14:55:19.04235",
+                  "updatedAtIST": "2026-05-15T14:55:19.04235",
+                  "platformFees": 300,
+                  "trip_request_id": "3bb457ee-e4e5-43e9-af1d-fb648cc6d814"
+              },
+              "discountId": null,
+              "rider": {
+                  "id": "d46f6689-9122-48f6-9512-2402cdc6ba8c",
+                  "riderProfileId": "e280a245-8a04-440b-a75e-72a866dd13a9",
+                  "rating": 0,
+                  "badge": null,
+                  "totalRides": 0,
+                  "totalDistance": 0,
+                  "totalDuration": 0,
+                  "totalSpent": 0,
+                  "referralId": null,
+                  "createdAtIST": "2026-05-15T14:09:41.600036",
+                  "updatedAtIST": "2026-05-15T14:09:41.600036"
+              },
+              "driver": null,
+              "tripFare": null,
+              "status": "CANCELLED",
+              "driverStartAddress": null,
+              "arrivedTime": null,
+              "pickedTime": null,
+              "droppedTime": null,
+              "waitingStartAt": null,
+              "actualTime": 0,
+              "actualFirstMile": 0,
+              "actualFirstMileDuration": 0,
+              "active": false,
+              "createdAtIST": "2026-05-15T14:55:23.096615",
+              "updatedAtIST": "2026-05-15T14:55:55.154826"
+          },
+          "error": null
+      }
+order: 1000

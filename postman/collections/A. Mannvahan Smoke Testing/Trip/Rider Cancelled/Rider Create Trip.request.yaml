@@ -1,0 +1,1100 @@
+$kind: http-request
+description: |-
+  Generated from cURL: curl -X POST http://localhost:8080/api/location/add \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjNTE3M2ViZC02MWE5LTQxZjAtODI3OS02N2Q0OTlmMGUwNmQifQ.tniilT4BpOIP_mfGs7sMsEIuV4wsJcV1ZeA3rkdDLz0" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Location",
+    "latitude": 12.9715987,
+    "longitude": 77.594566
+  }'
+url: "{{baseUrl}}/trips_new"
+method: POST
+headers:
+  Authorization: "{{RIDER_TOKEN}}"
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+        "fareEstimateNew": {
+            "id": "{{cFareEstimateId}}"
+        }
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: "// =====================================\r
+
+      // CONVERT RESPONSE TO JSON\r
+
+      // =====================================\r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // SAVE COLLECTION VARIABLES\r
+
+      // =====================================\r
+
+      if (response.data) {\r
+
+      \r
+
+      \    pm.collectionVariables.set(\r
+
+      \        \"cTripId\",\r
+
+      \        response.data.id\r
+
+      \    );\r
+
+      \r
+
+      \    pm.collectionVariables.set(\r
+
+      \        \"tripRequestId\",\r
+
+      \        response.data.tripRequestNew.id\r
+
+      \    );\r
+
+      \r
+
+      \    pm.collectionVariables.set(\r
+
+      \        \"cFareEstimateId\",\r
+
+      \        response.data.fareEstimateNew.id\r
+
+      \    );\r
+
+      \r
+
+      \    pm.collectionVariables.set(\r
+
+      \        \"riderId\",\r
+
+      \        response.data.rider.id\r
+
+      \    );\r
+
+      \r
+
+      }\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // STATUS CODE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Status code should be 201\", function () {\r
+
+      \r
+
+      \    pm.response.to.have.status(201);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // BASIC RESPONSE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"success should be true\", function () {\r
+
+      \r
+
+      \    pm.expect(response.success)\r
+
+      \        .to.eql(true);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"statusCode should be 201\", function () {\r
+
+      \r
+
+      \    pm.expect(response.statusCode)\r
+
+      \        .to.eql(201);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"error should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.error)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // MAIN DATA VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"data object should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.not.be.null;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Trip ID should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.id)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Trip status should be REQUESTED\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.status)\r
+
+      \        .to.eql(\"REQUESTED\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Trip should be active\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.active)\r
+
+      \        .to.eql(true);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // TRIP REQUEST VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"tripRequestNew should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.tripRequestNew)\r
+
+      \        .to.not.be.null;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Trip Request ID should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.id\r
+
+      \    ).to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Vehicle type should be AUTO\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.vehicleType\r
+
+      \    ).to.eql(\"AUTO\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Estimated distance should be number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.estimatedDistance\r
+
+      \    ).to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Estimated time should be number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.estimatedTime\r
+
+      \    ).to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Estimated first mile should be number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.estimatedFirstMile\r
+
+      \    ).to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Encoded polyline should be string\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.gmapEncodedPolyline\r
+
+      \    ).to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // START ADDRESS VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Start address should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.startAddress\r
+
+      \    ).to.not.be.null;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Start address shortName should be string\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.startAddress.shortName\r
+
+      \    ).to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Start latitude should be valid\", function () {\r
+
+      \r
+
+      \    const lat =\r
+
+      \        response.data.tripRequestNew.startAddress\r
+
+      \        .geoLocation.lat;\r
+
+      \r
+
+      \    pm.expect(lat)\r
+
+      \        .to.be.within(-90, 90);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Start longitude should be valid\", function () {\r
+
+      \r
+
+      \    const lng =\r
+
+      \        response.data.tripRequestNew.startAddress\r
+
+      \        .geoLocation.lng;\r
+
+      \r
+
+      \    pm.expect(lng)\r
+
+      \        .to.be.within(-180, 180);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // END ADDRESS VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"End address should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.endAddress\r
+
+      \    ).to.not.be.null;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"End address shortName should be string\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.endAddress.shortName\r
+
+      \    ).to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"End latitude should be valid\", function () {\r
+
+      \r
+
+      \    const lat =\r
+
+      \        response.data.tripRequestNew.endAddress\r
+
+      \        .geoLocation.lat;\r
+
+      \r
+
+      \    pm.expect(lat)\r
+
+      \        .to.be.within(-90, 90);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"End longitude should be valid\", function () {\r
+
+      \r
+
+      \    const lng =\r
+
+      \        response.data.tripRequestNew.endAddress\r
+
+      \        .geoLocation.lng;\r
+
+      \r
+
+      \    pm.expect(lng)\r
+
+      \        .to.be.within(-180, 180);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // FARE ESTIMATE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"fareEstimateNew should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.fareEstimateNew)\r
+
+      \        .to.not.be.null;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Fare estimate ID should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimateNew.id\r
+
+      \    ).to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Minimum estimated fare should be number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimateNew.minEstimatedFare\r
+
+      \    ).to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Maximum estimated fare should be number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimateNew.maxEstimatedFare\r
+
+      \    ).to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Driver estimated payable should be number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimateNew.driverEstimatedPayable\r
+
+      \    ).to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // RIDER VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Rider object should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.rider)\r
+
+      \        .to.not.be.null;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Rider ID should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.rider.id)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Rider total rides should be number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.rider.totalRides\r
+
+      \    ).to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Rider total spent should be number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.rider.totalSpent\r
+
+      \    ).to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // NULL VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Driver should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"tripFare should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.tripFare)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"driverStartAddress should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverStartAddress)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"arrivedTime should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.arrivedTime)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"pickedTime should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.pickedTime)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"droppedTime should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.droppedTime)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // DATE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"createdAtIST should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.createdAtIST)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"updatedAtIST should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.updatedAtIST)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // SCHEMA VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Response schema should be valid\", function () {\r
+
+      \r
+
+      \    const schema = {\r
+
+      \r
+
+      \        type: \"object\",\r
+
+      \r
+
+      \        required: [\r
+
+      \            \"success\",\r
+
+      \            \"statusCode\",\r
+
+      \            \"data\",\r
+
+      \            \"error\"\r
+
+      \        ],\r
+
+      \r
+
+      \        properties: {\r
+
+      \r
+
+      \            success: {\r
+
+      \                type: \"boolean\"\r
+
+      \            },\r
+
+      \r
+
+      \            statusCode: {\r
+
+      \                type: \"number\"\r
+
+      \            },\r
+
+      \r
+
+      \            data: {\r
+
+      \r
+
+      \                type: \"object\",\r
+
+      \r
+
+      \                required: [\r
+
+      \                    \"id\",\r
+
+      \                    \"tripRequestNew\",\r
+
+      \                    \"fareEstimateNew\",\r
+
+      \                    \"rider\",\r
+
+      \                    \"status\",\r
+
+      \                    \"active\"\r
+
+      \                ],\r
+
+      \r
+
+      \                properties: {\r
+
+      \r
+
+      \                    id: {\r
+
+      \                        type: \"string\"\r
+
+      \                    },\r
+
+      \r
+
+      \                    status: {\r
+
+      \                        type: \"string\"\r
+
+      \                    },\r
+
+      \r
+
+      \                    active: {\r
+
+      \                        type: \"boolean\"\r
+
+      \                    },\r
+
+      \r
+
+      \                    driver: {\r
+
+      \                        type: [\"null\", \"object\"]\r
+
+      \                    },\r
+
+      \r
+
+      \                    tripFare: {\r
+
+      \                        type: [\"null\", \"object\"]\r
+
+      \                    }\r
+
+      \r
+
+      \                }\r
+
+      \r
+
+      \            },\r
+
+      \r
+
+      \            error: {\r
+
+      \                type: [\"null\"]\r
+
+      \            }\r
+
+      \r
+
+      \        }\r
+
+      \r
+
+      \    };\r
+
+      \r
+
+      \    pm.response.to.have.jsonSchema(schema);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // HEADER VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Content-Type should be application/json\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        pm.response.headers.get(\"Content-Type\")\r
+
+      \    ).to.include(\"application/json\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // RESPONSE TIME VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Response time should be below 3000ms\", function () {\r
+
+      \r
+
+      \    pm.expect(pm.response.responseTime)\r
+
+      \        .to.be.below(3000);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // BUSINESS LOGIC VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"REQUESTED trip should be active\", function () {\r
+
+      \r
+
+      \    if (response.data.status === \"REQUESTED\") {\r
+
+      \r
+
+      \        pm.expect(response.data.active)\r
+
+      \            .to.eql(true);\r
+
+      \r
+
+      \    }\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"REQUESTED trip should not have assigned driver\", function () {\r
+
+      \r
+
+      \    if (response.data.status === \"REQUESTED\") {\r
+
+      \r
+
+      \        pm.expect(response.data.driver)\r
+
+      \            .to.eql(null);\r
+
+      \r
+
+      \    }\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Fare estimate vehicle type should match trip request vehicle type\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimateNew.vehicleType\r
+
+      \    ).to.eql(\r
+
+      \        response.data.tripRequestNew.vehicleType\r
+
+      \    );\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Estimated distance should be greater than zero\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.estimatedDistance\r
+
+      \    ).to.be.above(0);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Estimated time should be greater than zero\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.estimatedTime\r
+
+      \    ).to.be.above(0);\r
+
+      \r
+
+      });"
+    language: text/javascript
+order: 2000

@@ -1,0 +1,917 @@
+$kind: http-request
+url: "{{baseUrl}}/trips_new/{{cTripId}}/status"
+method: PUT
+headers:
+  Authorization: "{{cDriver_Token}}"
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+        // "status": "ACCEPTED"
+        // "status": "PICKED"
+        // "status": "DROPPED"
+        "status": "ACCEPTED"
+    }
+scripts:
+  - type: beforeRequest
+    code: "setTimeout(() => {\r\n}, 10000);"
+    language: text/javascript
+  - type: afterResponse
+    code: "// ==========================================\r
+
+      // PARSE RESPONSE\r
+
+      // ==========================================\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // COMMON UUID REGEX\r
+
+      // ==========================================\r
+
+      \r
+
+      const uuidRegex =\r
+
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_001 -> success datatype validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_001 - success should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.success)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_002 -> statusCode validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_002 - statusCode should be 200\", function () {\r
+
+      \r
+
+      \    pm.expect(response.statusCode)\r
+
+      \        .to.eql(200);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_003 -> data object validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_003 - data should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_004 -> trip id UUID validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_004 - trip id should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.id)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_005 -> trip status validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_005 - status should be ACCEPTED\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.status)\r
+
+      \        .to.eql(\"ACCEPTED\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_006 -> active datatype validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_006 - active should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.active)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_007 -> driver object validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_007 - driver should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_008 -> driver.id UUID validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_008 - driver.id should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver.id)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_009 -> driver status datatype\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_009 - driver status should be String\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver.status)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_010 -> driver status enum validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_010 - driver status should be valid\", function () {\r
+
+      \r
+
+      \    const validDriverStatus = [\r
+
+      \        \"AVAILABLE\",\r
+
+      \        \"BUSY\",\r
+
+      \        \"OFFLINE\",\r
+
+      \        \"ON_TRIP\"\r
+
+      \    ];\r
+
+      \r
+
+      \    pm.expect(validDriverStatus)\r
+
+      \        .to.include(response.data.driver.status);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_011 -> driver active validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_011 - driver active should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver.active)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_012 -> deleted validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_012 - deleted should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver.deleted)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_013 -> driverProfileId UUID validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_013 - driverProfileId should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver.driverProfileId)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_014 -> vehicleId UUID validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_014 - vehicleId should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver.vehicleId)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_015 -> driverStartAddress object validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_015 - driverStartAddress should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverStartAddress)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_016 -> driver latitude datatype\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_016 - driver latitude should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverStartAddress.lat)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_017 -> driver latitude range\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_017 - driver latitude should be valid\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverStartAddress.lat)\r
+
+      \        .to.be.within(-90, 90);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_018 -> driver longitude datatype\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_018 - driver longitude should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverStartAddress.lng)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_019 -> driver longitude range\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_019 - driver longitude should be valid\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverStartAddress.lng)\r
+
+      \        .to.be.within(-180, 180);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_020 -> arrivedTime null validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_020 - arrivedTime should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.arrivedTime)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_021 -> pickedTime null validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_021 - pickedTime should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.pickedTime)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_022 -> droppedTime null validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_022 - droppedTime should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.droppedTime)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_023 -> waitingStartAt null validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_023 - waitingStartAt should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.waitingStartAt)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_024 -> actualTime datatype validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_024 - actualTime should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.actualTime)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_025 -> actualFirstMile datatype validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_025 - actualFirstMile should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.actualFirstMile)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_026 -> actualFirstMileDuration datatype\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_026 - actualFirstMileDuration should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.actualFirstMileDuration)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_027 -> tripFare should be null\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_027 - tripFare should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.tripFare)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_028 -> createdAtIST datetime validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_028 - createdAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(response.data.createdAtIST)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_029 -> updatedAtIST datetime validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_029 - updatedAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(response.data.updatedAtIST)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_030 -> error should be null\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_030 - error should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.error)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_031 -> response time validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_031 - Response time should be below 3000ms\", function () {\r
+
+      \r
+
+      \    pm.expect(pm.response.responseTime)\r
+
+      \        .to.be.below(3000);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_032 -> accepted trip should have driver\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_032 - ACCEPTED trip should contain driver\", function () {\r
+
+      \r
+
+      \    if (response.data.status === \"ACCEPTED\") {\r
+
+      \r
+
+      \        pm.expect(response.data.driver)\r
+
+      \            .to.not.eql(null);\r
+
+      \    }\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_033 -> driver should be active\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_033 - Driver should be active\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver.active)\r
+
+      \        .to.eql(true);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_034 -> driver should not be deleted\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_034 - Driver should not be deleted\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver.deleted)\r
+
+      \        .to.eql(false);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_035 -> AVAILABLE driver consistency\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_035 - AVAILABLE driver should be active\", function () {\r
+
+      \r
+
+      \    if (response.data.driver.status === \"AVAILABLE\") {\r
+
+      \r
+
+      \        pm.expect(response.data.driver.active)\r
+
+      \            .to.eql(true);\r
+
+      \    }\r
+
+      \r
+
+      });"
+    language: text/javascript
+order: 5000

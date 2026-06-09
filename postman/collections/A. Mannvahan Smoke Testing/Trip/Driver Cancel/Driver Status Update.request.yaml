@@ -1,0 +1,298 @@
+$kind: http-request
+url: "{{baseUrl}}/drivers_new/status"
+method: PUT
+headers:
+  Authorization: "{{cDriver_Token}}"
+body:
+  type: json
+  content: |-
+    {
+        "newStatus":"AVAILABLE"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: "// =====================================\r
+
+      // CONVERT RESPONSE TO JSON\r
+
+      // =====================================\r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // STATUS CODE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Status code should be 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // BASIC RESPONSE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"success should be true\", function () {\r
+
+      \    pm.expect(response.success).to.eql(true);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"statusCode should be 200\", function () {\r
+
+      \    pm.expect(response.statusCode).to.eql(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"error should be null\", function () {\r
+
+      \    pm.expect(response.error).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // DATA VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"data should exist\", function () {\r
+
+      \    pm.expect(response.data).to.not.be.null;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"data should be object\", function () {\r
+
+      \    pm.expect(response.data).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // DRIVER ID VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"driver id should exist\", function () {\r
+
+      \    pm.expect(response.data.id).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"driver id should not be empty\", function () {\r
+
+      \    pm.expect(response.data.id.length).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // STATUS VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"status should be AVAILABLE\", function () {\r
+
+      \    pm.expect(response.data.status).to.eql(\"AVAILABLE\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"status should be string\", function () {\r
+
+      \    pm.expect(response.data.status).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // BOOLEAN FIELD VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"active should be true\", function () {\r
+
+      \    pm.expect(response.data.active).to.eql(true);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"deleted should be false\", function () {\r
+
+      \    pm.expect(response.data.deleted).to.eql(false);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // RELATION FIELDS VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"driverProfileId should exist\", function () {\r
+
+      \    pm.expect(response.data.driverProfileId).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"vehicleId should exist\", function () {\r
+
+      \    pm.expect(response.data.vehicleId).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // SCHEMA VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Response schema should be valid\", function () {\r
+
+      \r
+
+      \    const schema = {\r
+
+      \        type: \"object\",\r
+
+      \        required: [\"success\", \"statusCode\", \"data\", \"error\"],\r
+
+      \        properties: {\r
+
+      \r
+
+      \            success: { type: \"boolean\" },\r
+
+      \            statusCode: { type: \"number\" },\r
+
+      \r
+
+      \            data: {\r
+
+      \                type: \"object\",\r
+
+      \                required: [\r
+
+      \                    \"id\",\r
+
+      \                    \"status\",\r
+
+      \                    \"active\",\r
+
+      \                    \"deleted\",\r
+
+      \                    \"driverProfileId\",\r
+
+      \                    \"vehicleId\"\r
+
+      \                ],\r
+
+      \                properties: {\r
+
+      \r
+
+      \                    id: { type: \"string\" },\r
+
+      \                    status: { type: \"string\" },\r
+
+      \                    active: { type: \"boolean\" },\r
+
+      \                    deleted: { type: \"boolean\" },\r
+
+      \                    driverProfileId: { type: \"string\" },\r
+
+      \                    vehicleId: { type: \"string\" }\r
+
+      \r
+
+      \                }\r
+
+      \            },\r
+
+      \r
+
+      \            error: {\r
+
+      \                type: [\"null\"]\r
+
+      \            }\r
+
+      \        }\r
+
+      \    };\r
+
+      \r
+
+      \    pm.response.to.have.jsonSchema(schema);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // RESPONSE TIME VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"response time should be below 3000ms\", function () {\r
+
+      \    pm.expect(pm.response.responseTime).to.be.below(3000);\r
+
+      });"
+    language: text/javascript
+order: 3000

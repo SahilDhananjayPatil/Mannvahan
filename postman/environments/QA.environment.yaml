@@ -1,0 +1,22 @@
+name: QA
+values:
+  - key: baseUrl
+    value: 'http://192.168.1.8:8080/api/v1'
+  - key: cDriver_Token
+    value: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2NjRlYTRhNy1lZTVkLTRjNjktYjVjNy0xNzlhNzNhODIzYjIiLCJhdXRoVXNlciI6eyJ1c2VySWQiOiI2NjRlYTRhNy1lZTVkLTRjNjktYjVjNy0xNzlhNzNhODIzYjIiLCJlbnRpdHlUeXBlIjoiRFJJVkVSIiwiZW50aXR5SWQiOiI0MGYyNzlmOC05M2U3LTRlN2MtYTIwZC1jOGY5YjU3YjQyZTMifSwiaWF0IjoxNzc3OTg3NTI3LCJleHAiOjE3ODA1Nzk1Mjd9.Lbn6Vq08SrT8e-0iLE_2bpBpX7pLZWA0_z8biG13WQk
+  - key: RIDER_TOKEN
+    value: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2NjRlYTRhNy1lZTVkLTRjNjktYjVjNy0xNzlhNzNhODIzYjIiLCJhdXRoVXNlciI6eyJ1c2VySWQiOiI2NjRlYTRhNy1lZTVkLTRjNjktYjVjNy0xNzlhNzNhODIzYjIiLCJlbnRpdHlUeXBlIjoiUklERVIiLCJlbnRpdHlJZCI6IjQxMGQzM2E0LTIyMWMtNDYwZC1iODQ2LTkwMDc0Yzk3NWNlYSJ9LCJpYXQiOjE3NzkwOTU1NTYsImV4cCI6MTc4MTY4NzU1Nn0.EQd8b_3ABeUtsvWOML59qASsL_bWL2P7hikKuUaAiYk
+  - key: cFareEstimateId
+    value: feacb5ca-bcc7-4a2d-b081-c255166a7d2b
+  - key: cAmountDue
+    value: '3'
+  - key: cTripId
+    value: 4b3e8df0-b34e-4cac-88c2-395f52d416df
+  - key: tripRequestId
+    value: e5dc2cf8-1ef3-4913-b1a7-5ca4453c022b
+  - key: riderId
+    value: 410d33a4-221c-460d-b846-90074c975cea
+  - key: ''
+    value: ''
+  - key: testVar
+    value: ''

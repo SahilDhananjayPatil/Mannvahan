@@ -1,0 +1,154 @@
+$kind: http-request
+url: "{{baseUrl}}/trips_new/{{cTripId}}/status"
+method: GET
+headers:
+  Content-Type: application/json
+  Authorization: "{{RIDER_TOKEN}}"
+body:
+  type: json
+  content: |-
+    {
+        "status": "MATCHED"
+    }
+scripts:
+  - type: beforeRequest
+    code: 'console.log("get trip status for trip id: ", pm.collectionVariables.get("tripId"))'
+    language: text/javascript
+  - type: afterResponse
+    code: "// Status Code Validation\r
+
+      pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // Parse response\r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      // Schema Validation\r
+
+      pm.test(\"Response schema is valid\", function () {\r
+
+      \    const schema = {\r
+
+      \        type: \"object\",\r
+
+      \        required: [\"success\", \"statusCode\", \"data\", \"error\"],\r
+
+      \        properties: {\r
+
+      \            success: {\r
+
+      \                type: \"boolean\"\r
+
+      \            },\r
+
+      \            statusCode: {\r
+
+      \                type: \"number\"\r
+
+      \            },\r
+
+      \            data: {\r
+
+      \                type: \"object\",\r
+
+      \                required: [\"id\", \"status\"],\r
+
+      \                properties: {\r
+
+      \                    id: {\r
+
+      \                        type: \"string\"\r
+
+      \                    },\r
+
+      \                    status: {\r
+
+      \                        type: \"string\"\r
+
+      \                    }\r
+
+      \                }\r
+
+      \            },\r
+
+      \            error: {\r
+
+      \                type: [\"null\", \"object\"]\r
+
+      \            }\r
+
+      \        }\r
+
+      \    };\r
+
+      \r
+
+      \    pm.expect(tv4.validate(response, schema)).to.be.true;\r
+
+      });\r
+
+      \r
+
+      // Value Validations\r
+
+      pm.test(\"success should be true\", function () {\r
+
+      \    pm.expect(response.success).to.eql(true);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"statusCode should be 200\", function () {\r
+
+      \    pm.expect(response.statusCode).to.eql(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"data.id should not be empty\", function () {\r
+
+      \    pm.expect(response.data.id).to.not.be.empty;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"data.id should be UUID format\", function () {\r
+
+      \    const uuidRegex =\r
+
+      \        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;\r
+
+      \r
+
+      \    pm.expect(response.data.id).to.match(uuidRegex);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"status should be REQUESTED\", function () {\r
+
+      \    pm.expect(response.data.status).to.eql(\"REQUESTED\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"error should be null\", function () {\r
+
+      \    pm.expect(response.error).to.be.null;\r
+
+      });"
+    language: text/javascript
+order: 3000

@@ -1,0 +1,161 @@
+$kind: http-request
+url: "{{baseUrl}}/driver/location/update"
+method: PUT
+headers:
+  Authorization: "{{cDriver_Token}}"
+body:
+  type: json
+  content: |-
+    {
+        "lat": 20.918876688414926,
+        "lng": 74.75512973052511,
+         "accuracy": 8.5,
+        "tripId": null
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: "// =====================================\r
+
+      // CONVERT RESPONSE TO JSON\r
+
+      // =====================================\r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // STATUS CODE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Status code should be 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // BASIC RESPONSE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"success should be true\", function () {\r
+
+      \    pm.expect(response.success).to.eql(true);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"statusCode should be 200\", function () {\r
+
+      \    pm.expect(response.statusCode).to.eql(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"error should be null\", function () {\r
+
+      \    pm.expect(response.error).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // DATA VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"data should be null\", function () {\r
+
+      \    pm.expect(response.data).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // SCHEMA VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Response schema should be valid\", function () {\r
+
+      \r
+
+      \    const schema = {\r
+
+      \        type: \"object\",\r
+
+      \        required: [\"success\", \"statusCode\", \"data\", \"error\"],\r
+
+      \        properties: {\r
+
+      \r
+
+      \            success: { type: \"boolean\" },\r
+
+      \            statusCode: { type: \"number\" },\r
+
+      \r
+
+      \            data: {\r
+
+      \                type: [\"null\"]\r
+
+      \            },\r
+
+      \r
+
+      \            error: {\r
+
+      \                type: [\"null\"]\r
+
+      \            }\r
+
+      \        }\r
+
+      \    };\r
+
+      \r
+
+      \    pm.response.to.have.jsonSchema(schema);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // RESPONSE TIME VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"response time should be below 3000ms\", function () {\r
+
+      \    pm.expect(pm.response.responseTime).to.be.below(3000);\r
+
+      });"
+    language: text/javascript
+order: 4000

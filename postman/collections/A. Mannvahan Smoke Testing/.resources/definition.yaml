@@ -1,0 +1,15 @@
+$kind: collection
+variables:
+  baseUrl: ""
+  RIDER_TOKEN: ""
+  cTripId: ""
+  cFareEstimateId: ""
+  cDriver_Token: ""
+  cTripRequestId: ""
+  cRiderId: ""
+  tripRequestId: ""
+  riderId: ""
+  flowType: ""
+  flow: ""
+  tripId: ""
+  cAmountDue: ""

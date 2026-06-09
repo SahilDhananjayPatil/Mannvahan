@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{baseUrl}}/trips_new/{{cTripId}}/status"
+method: PUT
+headers:
+  Authorization: "{{cDriver_Token}}"
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+        // "status": "ACCEPTED"
+        // "status": "PICKED"
+        // "status": "DROPPED"
+        "status": "NO_SHOW"
+      }
+order: 1000

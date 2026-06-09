@@ -1,0 +1,578 @@
+$kind: http-request
+url: "{{baseUrl}}/trips_new/payment/collect/cash"
+method: POST
+headers:
+  Authorization: "{{cDriver_Token}}"
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+        "tripNew": {
+            "id": "{{cTripId}}"
+        },
+        "amount": {{cAmountDue}}
+    }
+scripts:
+  - type: afterResponse
+    code: "// ==========================================\r
+
+      // PARSE RESPONSE\r
+
+      // ==========================================\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // COMMON UUID REGEX\r
+
+      // ==========================================\r
+
+      \r
+
+      const uuidRegex =\r
+
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // BASIC RESPONSE VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Status code should be 200\", function () {\r
+
+      \r
+
+      \    pm.expect(response.statusCode)\r
+
+      \        .to.eql(200);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Success should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.success)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Data should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Error should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.error)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // PAYMENT ID VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Payment ID should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.id)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Trip ID should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.trip_id)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // PAYMENT TYPE VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Payment type should be String\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.type)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Payment type should be valid\", function () {\r
+
+      \r
+
+      \    const validTypes = [\r
+
+      \        \"CASH\",\r
+
+      \        \"ONLINE\",\r
+
+      \        \"CARD\",\r
+
+      \        \"UPI\"\r
+
+      \    ];\r
+
+      \r
+
+      \    pm.expect(validTypes)\r
+
+      \        .to.include(response.data.type);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // AMOUNT VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Amount should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.amount)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Amount should be greater than 0\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.amount)\r
+
+      \        .to.be.above(0);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // PAYMENT STATUS VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Payment status should be String\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.status)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Payment status should be PAID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.status)\r
+
+      \        .to.eql(\"PAID\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // PAID BY VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"paidBy should be String\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.paidBy)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"paidBy should be RIDER or DRIVER\", function () {\r
+
+      \r
+
+      \    const validPaidBy = [\r
+
+      \        \"RIDER\",\r
+
+      \        \"DRIVER\"\r
+
+      \    ];\r
+
+      \r
+
+      \    pm.expect(validPaidBy)\r
+
+      \        .to.include(response.data.paidBy);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // RECEIVED BY VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"receivedBy should be String\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.receivedBy)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"receivedBy should be DRIVER or SYSTEM\", function () {\r
+
+      \r
+
+      \    const validReceivedBy = [\r
+
+      \        \"DRIVER\",\r
+
+      \        \"SYSTEM\"\r
+
+      \    ];\r
+
+      \r
+
+      \    pm.expect(validReceivedBy)\r
+
+      \        .to.include(response.data.receivedBy);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // BOOLEAN FIELD VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"driverCollected should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverCollected)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"systemCollected should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.systemCollected)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // DATETIME VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"paidAt should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(response.data.paidAt)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"receivedAt should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(response.data.receivedAt)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"createdAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(response.data.createdAtIST)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"updatedAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(response.data.updatedAtIST)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // BUSINESS LOGIC VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"PAID payment should contain paidAt\", function () {\r
+
+      \r
+
+      \    if (response.data.status === \"PAID\") {\r
+
+      \r
+
+      \        pm.expect(response.data.paidAt)\r
+
+      \            .to.not.eql(null);\r
+
+      \    }\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Driver collected payment should set driverCollected true\", function () {\r
+
+      \r
+
+      \    if (response.data.receivedBy === \"DRIVER\") {\r
+
+      \r
+
+      \        pm.expect(response.data.driverCollected)\r
+
+      \            .to.eql(true);\r
+
+      \    }\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"System collected payment should set systemCollected true\", function () {\r
+
+      \r
+
+      \    if (response.data.receivedBy === \"SYSTEM\") {\r
+
+      \r
+
+      \        pm.expect(response.data.systemCollected)\r
+
+      \            .to.eql(true);\r
+
+      \    }\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // PERFORMANCE VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Response time should be below 3000ms\", function () {\r
+
+      \r
+
+      \    pm.expect(pm.response.responseTime)\r
+
+      \        .to.be.below(3000);\r
+
+      \r
+
+      });"
+    language: text/javascript
+order: 10000

@@ -1,0 +1,15 @@
+# Use this workspace to collaborate
+workspace:
+  id: a1f67359-ff99-4e6c-a3e0-ec4585389104
+
+localResources:
+  collections:
+    - ..\A. Mannvahan Smoke Testing.postman_collection.json
+  environments:
+    - ..\QA.postman_environment.json
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ..\postman\collections\A. Mannvahan Smoke Testing: 039bde6a-13f2-458f-ba62-2733c64516cd

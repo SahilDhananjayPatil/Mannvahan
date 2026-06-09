@@ -1,0 +1,638 @@
+$kind: http-request
+description: |-
+  Generated from cURL: curl -X POST http://localhost:8080/api/location/add \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjNTE3M2ViZC02MWE5LTQxZjAtODI3OS02N2Q0OTlmMGUwNmQifQ.tniilT4BpOIP_mfGs7sMsEIuV4wsJcV1ZeA3rkdDLz0" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Location",
+    "latitude": 12.9715987,
+    "longitude": 77.594566
+  }'
+url: "{{baseUrl}}/trip_requests_new"
+method: POST
+headers:
+  Authorization: "{{RIDER_TOKEN}}"
+body:
+  type: json
+  content: |
+    {
+        "startAddress": {
+            "shortName": "aadhar nagar",
+            "geoLocation": {
+                "lat": 20.918876688414926,
+                "lng": 74.75512973052511
+            }
+            
+        },
+        "endAddress": {
+            "shortName": "bus stand",
+            "geoLocation": {
+                "lat": 20.906394036221187,
+                "lng": 74.76976678092302
+            }
+        },
+        "vehicleType": "AUTO"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: "// ==========================================\r
+
+      // RESPONSE VALIDATION TEST CASES\r
+
+      // ==========================================\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_001 -> Verify success is Boolean\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_001 - success should be Boolean\", function () {\r
+
+      \    pm.expect(response.success).to.be.a(\"boolean\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_002 -> Verify statusCode is Integer\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_002 - statusCode should be Number\", function () {\r
+
+      \    pm.expect(response.statusCode).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_003 -> Verify statusCode should be 201\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_003 - statusCode should be 201\", function () {\r
+
+      \    pm.expect(response.statusCode).to.eql(201);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_004 -> Verify data is Object\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_004 - data should be Object\", function () {\r
+
+      \    pm.expect(response.data).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_005 -> Verify error is null\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_005 - error should be null\", function () {\r
+
+      \    pm.expect(response.error).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_006 -> Verify id is String\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_006 - id should be String\", function () {\r
+
+      \    pm.expect(response.data.id).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_007 -> Verify UUID format\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_007 - id should be valid UUID\", function () {\r
+
+      \r
+
+      \    const uuidRegex =\r
+
+      \    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;\r
+
+      \r
+
+      \    pm.expect(response.data.id).to.match(uuidRegex);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_008 -> Verify startAddress exists\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_008 - startAddress should be Object\", function () {\r
+
+      \    pm.expect(response.data.startAddress).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_009 -> Verify shortName datatype\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_009 - shortName should be String\", function () {\r
+
+      \    pm.expect(response.data.startAddress.shortName).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_010 -> Verify shortName not empty\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_010 - shortName should not be empty\", function () {\r
+
+      \    pm.expect(\r
+
+      \        response.data.startAddress.shortName.trim().length\r
+
+      \    ).to.be.greaterThan(0);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_011 -> Verify latitude datatype\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_011 - latitude should be Number\", function () {\r
+
+      \    pm.expect(\r
+
+      \        response.data.startAddress.geoLocation.lat\r
+
+      \    ).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_012 -> Verify latitude range\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_012 - latitude should be between -90 and 90\", function () {\r
+
+      \r
+
+      \    const lat = response.data.startAddress.geoLocation.lat;\r
+
+      \r
+
+      \    pm.expect(lat).to.be.within(-90, 90);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_013 -> Verify longitude datatype\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_013 - longitude should be Number\", function () {\r
+
+      \    pm.expect(\r
+
+      \        response.data.startAddress.geoLocation.lng\r
+
+      \    ).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_014 -> Verify longitude range\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_014 - longitude should be between -180 and 180\", function () {\r
+
+      \r
+
+      \    const lng = response.data.startAddress.geoLocation.lng;\r
+
+      \r
+
+      \    pm.expect(lng).to.be.within(-180, 180);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_015 -> Verify vehicleType datatype\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_015 - vehicleType should be String\", function () {\r
+
+      \    pm.expect(response.data.vehicleType).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_016 -> Verify valid vehicleType enum\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_016 - vehicleType should be valid\", function () {\r
+
+      \r
+
+      \    const validVehicleTypes = [\"AUTO\", \"BIKE\", \"CAB\"];\r
+
+      \r
+
+      \    pm.expect(validVehicleTypes).to.include(\r
+
+      \        response.data.vehicleType\r
+
+      \    );\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_017 -> Verify estimatedDistance datatype\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_017 - estimatedDistance should be Number\", function () {\r
+
+      \    pm.expect(response.data.estimatedDistance).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_018 -> Verify estimatedDistance positive\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_018 - estimatedDistance should be positive\", function () {\r
+
+      \    pm.expect(response.data.estimatedDistance)\r
+
+      \        .to.be.greaterThan(0);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_019 -> Verify estimatedTime datatype\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_019 - estimatedTime should be Number\", function () {\r
+
+      \    pm.expect(response.data.estimatedTime).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_020 -> Verify estimatedTime positive\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_020 - estimatedTime should be positive\", function () {\r
+
+      \    pm.expect(response.data.estimatedTime)\r
+
+      \        .to.be.greaterThan(0);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_021 -> Verify fareEstimatesNew is Array\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_021 - fareEstimatesNew should be Array\", function () {\r
+
+      \    pm.expect(response.data.fareEstimatesNew).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_022 -> Verify fareEstimatesNew not empty\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_022 - fareEstimatesNew should not be empty\", function () {\r
+
+      \    pm.expect(response.data.fareEstimatesNew.length)\r
+
+      \        .to.be.greaterThan(0);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_023 -> Verify distanceFare datatype\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_023 - distanceFare should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimatesNew[0].distanceFare\r
+
+      \    ).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_024 -> Verify distanceFare positive\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_024 - distanceFare should be positive\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimatesNew[0].distanceFare\r
+
+      \    ).to.be.greaterThan(0);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_025 -> Verify nightFareMultiplier datatype\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_025 - nightFareMultiplier should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimatesNew[0].nightFareMultiplier\r
+
+      \    ).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_026 -> Verify createdAtIST format\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_026 - createdAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    const createdAt =\r
+
+      \        response.data.createdAtIST;\r
+
+      \r
+
+      \    pm.expect(Date.parse(createdAt)).to.not.be.NaN;\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_027 -> Verify updatedAtIST format\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_027 - updatedAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    const updatedAt =\r
+
+      \        response.data.updatedAtIST;\r
+
+      \r
+
+      \    pm.expect(Date.parse(updatedAt)).to.not.be.NaN;\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_028 -> Verify min fare <= max fare\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_028 - minEstimatedFare should be <= maxEstimatedFare\", function () {\r
+
+      \r
+
+      \    const fare =\r
+
+      \        response.data.fareEstimatesNew[0];\r
+
+      \r
+
+      \    pm.expect(fare.minEstimatedFare)\r
+
+      \        .to.be.at.most(fare.maxEstimatedFare);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_029 -> Verify trip_request_id UUID\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_029 - trip_request_id should be valid UUID\", function () {\r
+
+      \r
+
+      \    const uuidRegex =\r
+
+      \    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimatesNew[0].trip_request_id\r
+
+      \    ).to.match(uuidRegex);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_030 -> Verify response time\r
+
+      // ==========================================\r
+
+      pm.test(\"TC_030 - Response time should be below 3000ms\", function () {\r
+
+      \r
+
+      \    pm.expect(pm.response.responseTime)\r
+
+      \        .to.be.below(3000);\r
+
+      });"
+    language: text/javascript
+order: 1000

@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{baseurl}}/driver_profile"
+method: GET
+headers:
+  Authorization: "{{DRIVER_TOKEN}}"
+  "": ""
+auth:
+  type: noauth
+order: 1000

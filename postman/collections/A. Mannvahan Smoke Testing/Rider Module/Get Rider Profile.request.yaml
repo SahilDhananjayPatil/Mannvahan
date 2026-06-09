@@ -1,0 +1,8 @@
+$kind: http-request
+url: "{{baseurl}}/rider_profile"
+method: GET
+headers:
+  Authorization: "{{RIDER_TOKEN}}"
+auth:
+  type: noauth
+order: 1000

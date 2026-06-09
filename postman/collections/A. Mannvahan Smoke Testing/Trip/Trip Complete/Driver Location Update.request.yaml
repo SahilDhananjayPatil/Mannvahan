@@ -1,0 +1,273 @@
+$kind: http-request
+url: "{{baseUrl}}/driver/location/update"
+method: PUT
+headers:
+  Authorization: "{{cDriver_Token}}"
+body:
+  type: json
+  content: |-
+    {
+        "lat": 20.918876688414926,
+        "lng": 74.75512973052511,
+         "accuracy": 8.5,
+        "tripId": null
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: "// ==========================================\r
+
+      // PARSE RESPONSE\r
+
+      // ==========================================\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_001 -> success datatype validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_001 - success should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.success)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_002 -> success value validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_002 - success should be true\", function () {\r
+
+      \r
+
+      \    pm.expect(response.success)\r
+
+      \        .to.eql(true);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_003 -> statusCode datatype validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_003 - statusCode should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.statusCode)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_004 -> statusCode value validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_004 - statusCode should be 200\", function () {\r
+
+      \r
+
+      \    pm.expect(response.statusCode)\r
+
+      \        .to.eql(200);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_005 -> data should be null\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_005 - data should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_006 -> error should be null\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_006 - error should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.error)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_007 -> Verify response contains required fields\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_007 - Required response fields should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(response).to.have.property(\"success\");\r
+
+      \    pm.expect(response).to.have.property(\"statusCode\");\r
+
+      \    pm.expect(response).to.have.property(\"data\");\r
+
+      \    pm.expect(response).to.have.property(\"error\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_008 -> Verify response is JSON object\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_008 - Response should be JSON object\", function () {\r
+
+      \r
+
+      \    pm.expect(response)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_009 -> Verify no unexpected datatype\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_009 - data should not be Array/Object/String\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.not.be.an(\"array\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_010 -> Response time validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_010 - Response time should be below 3000ms\", function () {\r
+
+      \r
+
+      \    pm.expect(pm.response.responseTime)\r
+
+      \        .to.be.below(3000);\r
+
+      \r
+
+      });"
+    language: text/javascript
+order: 4000

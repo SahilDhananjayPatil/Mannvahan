@@ -1,0 +1,668 @@
+$kind: http-request
+url: "{{baseUrl}}/trips_new/{{cTripId}}/status"
+method: PUT
+headers:
+  Authorization: "{{cDriver_Token}}"
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+        // "status": "ACCEPTED"
+        // "status": "PICKED"
+        // "status": "DROPPED"
+        "status": "PICKED"
+      }
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code should be 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Response should be an object\", function () {\r
+
+      \    pm.expect(response).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"success should be true and boolean\", function () {\r
+
+      \    pm.expect(response.success).to.be.a(\"boolean\");\r
+
+      \    pm.expect(response.success).to.eql(true);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"statusCode should be number and 200\", function () {\r
+
+      \    pm.expect(response.statusCode).to.be.a(\"number\");\r
+
+      \    pm.expect(response.statusCode).to.eql(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"error should be null\", function () {\r
+
+      \    pm.expect(response.error).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"data should be object\", function () {\r
+
+      \    pm.expect(response.data).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      /* =========================\r
+
+      \   MAIN TRIP VALIDATIONS\r
+
+      ========================= */\r
+
+      \r
+
+      pm.test(\"Trip ID should be valid UUID\", function () {\r
+
+      \    pm.expect(response.data.id).to.be.a(\"string\");\r
+
+      \    pm.expect(response.data.id).to.match(/^[0-9a-fA-F-]{36}$/);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Trip status should be PICKED\", function () {\r
+
+      \    pm.expect(response.data.status).to.be.a(\"string\");\r
+
+      \    pm.expect(response.data.status).to.eql(\"PICKED\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"active should be boolean\", function () {\r
+
+      \    pm.expect(response.data.active).to.be.a(\"boolean\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"actualTime should be number\", function () {\r
+
+      \    pm.expect(response.data.actualTime).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"actualFirstMile should be number\", function () {\r
+
+      \    pm.expect(response.data.actualFirstMile).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"actualFirstMileDuration should be number\", function () {\r
+
+      \    pm.expect(response.data.actualFirstMileDuration).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"createdAtIST should be string\", function () {\r
+
+      \    pm.expect(response.data.createdAtIST).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"updatedAtIST should be string\", function () {\r
+
+      \    pm.expect(response.data.updatedAtIST).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"arrivedTime should be string\", function () {\r
+
+      \    pm.expect(response.data.arrivedTime).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"pickedTime should be string\", function () {\r
+
+      \    pm.expect(response.data.pickedTime).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"droppedTime should be null\", function () {\r
+
+      \    pm.expect(response.data.droppedTime).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"waitingStartAt should be null\", function () {\r
+
+      \    pm.expect(response.data.waitingStartAt).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      /* =========================\r
+
+      \   TRIP REQUEST VALIDATION\r
+
+      ========================= */\r
+
+      \r
+
+      pm.test(\"tripRequestNew should be object\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"tripRequestNew.id should be UUID\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.id).to.be.a(\"string\");\r
+
+      \    pm.expect(response.data.tripRequestNew.id).to.match(/^[0-9a-fA-F-]{36}$/);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"vehicleType should be string\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.vehicleType).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"gmapEncodedPolyline should be string\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.gmapEncodedPolyline).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"estimatedDistance should be number\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.estimatedDistance).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"estimatedTime should be number\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.estimatedTime).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"estimatedFirstMile should be number\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.estimatedFirstMile).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      /* =========================\r
+
+      \   START ADDRESS VALIDATION\r
+
+      ========================= */\r
+
+      \r
+
+      pm.test(\"startAddress should be object\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.startAddress).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"startAddress.shortName should be string\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.startAddress.shortName).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"startAddress latitude should be number\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.startAddress.geoLocation.lat).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"startAddress longitude should be number\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.startAddress.geoLocation.lng).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      /* =========================\r
+
+      \   END ADDRESS VALIDATION\r
+
+      ========================= */\r
+
+      \r
+
+      pm.test(\"endAddress should be object\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.endAddress).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"endAddress.shortName should be string\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.endAddress.shortName).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"endAddress latitude should be number\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.endAddress.geoLocation.lat).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"endAddress longitude should be number\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.endAddress.geoLocation.lng).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      /* =========================\r
+
+      \   FARE ESTIMATE VALIDATION\r
+
+      ========================= */\r
+
+      \r
+
+      pm.test(\"fareEstimateNew should be object\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"fareEstimateNew.id should be UUID\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.id).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"distanceFare should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.distanceFare).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"timeFare should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.timeFare).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"firstMileFare should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.firstMileFare).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"platformFee should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.platformFee).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"serviceCharge should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.serviceCharge).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"nightCharge should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.nightCharge).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"discount should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.discount).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"minEstimatedFare should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.minEstimatedFare).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"maxEstimatedFare should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.maxEstimatedFare).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"nightFareMultiplier should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.nightFareMultiplier).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"driverEstimatedPayable should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.driverEstimatedPayable).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"platformFees should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.platformFees).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"trip_request_id should be UUID\", function () {\r
+
+      \    pm.expect(response.data.fareEstimateNew.trip_request_id).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      /* =========================\r
+
+      \   RIDER VALIDATION\r
+
+      ========================= */\r
+
+      \r
+
+      pm.test(\"rider should be object\", function () {\r
+
+      \    pm.expect(response.data.rider).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"rider.id should be UUID\", function () {\r
+
+      \    pm.expect(response.data.rider.id).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"riderProfileId should be UUID\", function () {\r
+
+      \    pm.expect(response.data.rider.riderProfileId).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"rating should be number\", function () {\r
+
+      \    pm.expect(response.data.rider.rating).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"badge should be null\", function () {\r
+
+      \    pm.expect(response.data.rider.badge).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"totalRides should be number\", function () {\r
+
+      \    pm.expect(response.data.rider.totalRides).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"totalDistance should be number\", function () {\r
+
+      \    pm.expect(response.data.rider.totalDistance).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"totalDuration should be number\", function () {\r
+
+      \    pm.expect(response.data.rider.totalDuration).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"totalSpent should be number\", function () {\r
+
+      \    pm.expect(response.data.rider.totalSpent).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"referralId should be null\", function () {\r
+
+      \    pm.expect(response.data.rider.referralId).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      /* =========================\r
+
+      \   DRIVER VALIDATION\r
+
+      ========================= */\r
+
+      \r
+
+      pm.test(\"driver should be object\", function () {\r
+
+      \    pm.expect(response.data.driver).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"driver.id should be UUID\", function () {\r
+
+      \    pm.expect(response.data.driver.id).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"driver.status should be BUSY\", function () {\r
+
+      \    pm.expect(response.data.driver.status).to.be.a(\"string\");\r
+
+      \    pm.expect(response.data.driver.status).to.eql(\"BUSY\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"driver.active should be boolean\", function () {\r
+
+      \    pm.expect(response.data.driver.active).to.be.a(\"boolean\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"driver.deleted should be boolean\", function () {\r
+
+      \    pm.expect(response.data.driver.deleted).to.be.a(\"boolean\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"driverProfileId should be UUID\", function () {\r
+
+      \    pm.expect(response.data.driver.driverProfileId).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"vehicleId should be UUID\", function () {\r
+
+      \    pm.expect(response.data.driver.vehicleId).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      /* =========================\r
+
+      \   DRIVER START ADDRESS\r
+
+      ========================= */\r
+
+      \r
+
+      pm.test(\"driverStartAddress should be object\", function () {\r
+
+      \    pm.expect(response.data.driverStartAddress).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"driverStartAddress.lat should be number\", function () {\r
+
+      \    pm.expect(response.data.driverStartAddress.lat).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"driverStartAddress.lng should be number\", function () {\r
+
+      \    pm.expect(response.data.driverStartAddress.lng).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      /* =========================\r
+
+      \   NULL VALIDATIONS\r
+
+      ========================= */\r
+
+      \r
+
+      pm.test(\"tripFare should be null\", function () {\r
+
+      \    pm.expect(response.data.tripFare).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"discountId should be null\", function () {\r
+
+      \    pm.expect(response.data.discountId).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      pm.execution.setNextRequest(\"driver mark dropped\")"
+    language: text/javascript
+order: 1000

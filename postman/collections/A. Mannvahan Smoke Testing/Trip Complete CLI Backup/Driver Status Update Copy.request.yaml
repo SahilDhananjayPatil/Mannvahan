@@ -1,0 +1,434 @@
+$kind: http-request
+url: "{{baseUrl}}/drivers_new/status"
+method: PUT
+headers:
+  Authorization: "{{cDriver_Token}}"
+body:
+  type: json
+  content: |-
+    {
+        "newStatus":"AVAILABLE"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: "// ==========================================\r
+
+      // PARSE RESPONSE\r
+
+      // ==========================================\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // COMMON UUID REGEX\r
+
+      // ==========================================\r
+
+      \r
+
+      const uuidRegex =\r
+
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // BASIC RESPONSE VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Status code should be 200\", function () {\r
+
+      \r
+
+      \    pm.expect(response.statusCode)\r
+
+      \        .to.eql(200);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Success should be true\", function () {\r
+
+      \r
+
+      \    pm.expect(response.success)\r
+
+      \        .to.eql(true);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Success should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.success)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Data should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Error should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.error)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // DRIVER VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Driver ID should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.id)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Driver status should be String\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.status)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Driver status should be AVAILABLE\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.status)\r
+
+      \        .to.eql(\"AVAILABLE\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // BOOLEAN FIELD VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Active should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.active)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Active should be true\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.active)\r
+
+      \        .to.eql(true);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Deleted should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.deleted)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Deleted should be false\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.deleted)\r
+
+      \        .to.eql(false);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // PROFILE & VEHICLE VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"DriverProfileId should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverProfileId)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"VehicleId should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.vehicleId)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"DriverProfileId should be String\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverProfileId)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"VehicleId should be String\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.vehicleId)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // MANDATORY FIELD VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Mandatory fields should exist\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.have.property(\"id\");\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.have.property(\"status\");\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.have.property(\"active\");\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.have.property(\"deleted\");\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.have.property(\"driverProfileId\");\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.have.property(\"vehicleId\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // BUSINESS LOGIC VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"AVAILABLE driver should be active\", function () {\r
+
+      \r
+
+      \    if (response.data.status === \"AVAILABLE\") {\r
+
+      \r
+
+      \        pm.expect(response.data.active)\r
+
+      \            .to.eql(true);\r
+
+      \    }\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"AVAILABLE driver should not be deleted\", function () {\r
+
+      \r
+
+      \    if (response.data.status === \"AVAILABLE\") {\r
+
+      \r
+
+      \        pm.expect(response.data.deleted)\r
+
+      \            .to.eql(false);\r
+
+      \    }\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // PERFORMANCE VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Response time should be below 3000ms\", function () {\r
+
+      \r
+
+      \    pm.expect(pm.response.responseTime)\r
+
+      \        .to.be.below(3000);\r
+
+      \r
+
+      });"
+    language: text/javascript
+order: 3000

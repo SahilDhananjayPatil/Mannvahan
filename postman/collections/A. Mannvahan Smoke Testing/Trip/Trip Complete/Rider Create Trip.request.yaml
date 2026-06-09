@@ -1,0 +1,1090 @@
+$kind: http-request
+description: |-
+  Generated from cURL: curl -X POST http://localhost:8080/api/location/add \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjNTE3M2ViZC02MWE5LTQxZjAtODI3OS02N2Q0OTlmMGUwNmQifQ.tniilT4BpOIP_mfGs7sMsEIuV4wsJcV1ZeA3rkdDLz0" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Location",
+    "latitude": 12.9715987,
+    "longitude": 77.594566
+  }'
+url: "{{baseUrl}}/trips_new"
+method: POST
+headers:
+  Authorization: "{{RIDER_TOKEN}}"
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+        "fareEstimateNew": {
+            "id": "{{cFareEstimateId}}"
+        }
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: "// ==========================================\r
+
+      // PARSE RESPONSE\r
+
+      // ==========================================\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // SAVE COLLECTION VARIABLES\r
+
+      // =====================================\r
+
+      if (response.data) {\r
+
+      \r
+
+      \    \r
+
+      \r
+
+      \    pm.collectionVariables.set(\r
+
+      \        \"cTripId\",\r
+
+      \        response.data.id\r
+
+      \    );\r
+
+      \r
+
+      \    pm.collectionVariables.set(\r
+
+      \        \"tripRequestId\",\r
+
+      \        response.data.tripRequestNew.id\r
+
+      \    );\r
+
+      \r
+
+      \    pm.collectionVariables.set(\r
+
+      \        \"cFareEstimateId\",\r
+
+      \        response.data.fareEstimateNew.id\r
+
+      \    );\r
+
+      \r
+
+      \    pm.collectionVariables.set(\r
+
+      \        \"riderId\",\r
+
+      \        response.data.rider.id\r
+
+      \    );\r
+
+      \r
+
+      }\r
+
+      \r
+
+      \r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // COMMON UUID REGEX\r
+
+      // ==========================================\r
+
+      \r
+
+      const uuidRegex =\r
+
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_001 -> success datatype validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_001 - success should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.success).to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_002 -> statusCode validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_002 - statusCode should be 201\", function () {\r
+
+      \r
+
+      \    pm.expect(response.statusCode).to.eql(201);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_003 -> data object validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_003 - data should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data).to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_004 -> main trip id UUID validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_004 - Trip ID should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.id).to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_005 -> tripRequestNew object validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_005 - tripRequestNew should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.tripRequestNew).to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_006 -> tripRequestNew.id UUID validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_006 - tripRequestNew.id should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.tripRequestNew.id)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_007 -> startAddress object validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_007 - startAddress should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.tripRequestNew.startAddress)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_008 -> startAddress.shortName datatype\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_008 - shortName should be String\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.startAddress.shortName\r
+
+      \    ).to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_009 -> shortName should not be empty\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_009 - shortName should not be empty\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.startAddress.shortName.trim().length\r
+
+      \    ).to.be.greaterThan(0);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_010 -> latitude datatype validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_010 - latitude should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.startAddress.geoLocation.lat\r
+
+      \    ).to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_011 -> latitude range validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_011 - latitude should be valid\", function () {\r
+
+      \r
+
+      \    const lat =\r
+
+      \    response.data.tripRequestNew.startAddress.geoLocation.lat;\r
+
+      \r
+
+      \    pm.expect(lat).to.be.within(-90, 90);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_012 -> longitude datatype validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_012 - longitude should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.startAddress.geoLocation.lng\r
+
+      \    ).to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_013 -> longitude range validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_013 - longitude should be valid\", function () {\r
+
+      \r
+
+      \    const lng =\r
+
+      \    response.data.tripRequestNew.startAddress.geoLocation.lng;\r
+
+      \r
+
+      \    pm.expect(lng).to.be.within(-180, 180);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_014 -> vehicleType validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_014 - vehicleType should be valid\", function () {\r
+
+      \r
+
+      \    const validVehicleTypes =\r
+
+      \    [\"AUTO\", \"BIKE\", \"CAB\"];\r
+
+      \r
+
+      \    pm.expect(validVehicleTypes)\r
+
+      \        .to.include(response.data.tripRequestNew.vehicleType);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_015 -> estimatedDistance validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_015 - estimatedDistance should be positive\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.estimatedDistance\r
+
+      \    ).to.be.greaterThan(0);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_016 -> estimatedTime validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_016 - estimatedTime should be positive\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.estimatedTime\r
+
+      \    ).to.be.greaterThan(0);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_017 -> fareEstimatesNew array validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_017 - fareEstimatesNew should be Array\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.fareEstimatesNew\r
+
+      \    ).to.be.an(\"array\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_018 -> fareEstimatesNew should not be empty\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_018 - fareEstimatesNew should not be empty\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.tripRequestNew.fareEstimatesNew.length\r
+
+      \    ).to.be.greaterThan(0);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_019 -> fareEstimateNew object validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_019 - fareEstimateNew should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimateNew\r
+
+      \    ).to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_020 -> fareEstimateNew.id UUID validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_020 - fareEstimateNew.id should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimateNew.id\r
+
+      \    ).to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_021 -> distanceFare validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_021 - distanceFare should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimateNew.distanceFare\r
+
+      \    ).to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_022 -> min fare <= max fare validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_022 - minEstimatedFare should be <= maxEstimatedFare\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimateNew.minEstimatedFare\r
+
+      \    ).to.be.at.most(\r
+
+      \        response.data.fareEstimateNew.maxEstimatedFare\r
+
+      \    );\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_023 -> nightFareMultiplier datatype\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_023 - nightFareMultiplier should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        response.data.fareEstimateNew.nightFareMultiplier\r
+
+      \    ).to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_024 -> rider object validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_024 - rider should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.rider)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_025 -> rider.id UUID validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_025 - rider.id should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.rider.id)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_026 -> riderProfileId UUID validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_026 - riderProfileId should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.rider.riderProfileId)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_027 -> rating datatype validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_027 - rating should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.rider.rating)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_028 -> totalRides validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_028 - totalRides should be positive\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.rider.totalRides)\r
+
+      \        .to.be.at.least(0);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_029 -> totalSpent validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_029 - totalSpent should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.rider.totalSpent)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_030 -> driver should be null initially\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_030 - driver should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_031 -> tripFare should be null\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_031 - tripFare should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.tripFare)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_032 -> status enum validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_032 - status should be valid\", function () {\r
+
+      \r
+
+      \    const validStatus = [\r
+
+      \        \"REQUESTED\",\r
+
+      \        \"ACCEPTED\",\r
+
+      \        \"ARRIVED\",\r
+
+      \        \"PICKED\",\r
+
+      \        \"COMPLETED\",\r
+
+      \        \"CANCELLED\"\r
+
+      \    ];\r
+
+      \r
+
+      \    pm.expect(validStatus)\r
+
+      \        .to.include(response.data.status);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_033 -> active datatype validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_033 - active should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.active)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_034 -> actualTime validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_034 - actualTime should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.actualTime)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_035 -> createdAtIST datetime validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_035 - createdAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(response.data.createdAtIST)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_036 -> updatedAtIST datetime validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_036 - updatedAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(response.data.updatedAtIST)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_037 -> error should be null\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_037 - error should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.error)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TC_038 -> response time validation\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"TC_038 - Response time should be below 3000ms\", function () {\r
+
+      \r
+
+      \    pm.expect(pm.response.responseTime)\r
+
+      \        .to.be.below(3000);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      console.log(\"trip_id\", cTripId)"
+    language: text/javascript
+order: 2000

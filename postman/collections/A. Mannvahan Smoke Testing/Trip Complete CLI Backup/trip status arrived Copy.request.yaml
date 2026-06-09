@@ -1,0 +1,87 @@
+$kind: http-request
+url: "{{baseUrl}}/trips_new/{{cTripId}}/status"
+method: GET
+headers:
+  Content-Type: application/json
+  Authorization: "{{cDriver_Token}}"
+body:
+  type: json
+  content: |-
+    {
+        "status": "MATCHED"
+    }
+scripts:
+  - type: afterResponse
+    code: "// ==========================================\r
+
+      // PARSE RESPONSE\r
+
+      // ==========================================\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // COMMON UUID REGEX\r
+
+      // ==========================================\r
+
+      \r
+
+      const uuidRegex =\r
+
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // BASIC RESPONSE VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Status code should be 200\", function () {\r
+
+      \r
+
+      \    pm.expect(response.statusCode)\r
+
+      \        .to.eql(200);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Success should be true\", function () {\r
+
+      \r
+
+      \    pm.expect(response.success)\r
+
+      \        .to.eql(true);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Success should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response"
+    language: text/javascript
+order: 6000

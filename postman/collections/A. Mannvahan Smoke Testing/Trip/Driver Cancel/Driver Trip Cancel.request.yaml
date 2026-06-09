@@ -1,0 +1,284 @@
+$kind: http-request
+url: "{{baseUrl}}/trips_new/{{cTripId}}/status"
+method: PUT
+headers:
+  Authorization: "{{cDriver_Token}}"
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+        // "status": "ACCEPTED"
+        // "status": "PICKED"
+        // "status": "DROPPED"
+        "status": "CANCELLED"
+    }
+scripts:
+  - type: afterResponse
+    code: "const response = pm.response.json();\r
+
+      \r
+
+      // =====================================\r
+
+      // STATUS CODE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Status code should be 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      // =====================================\r
+
+      // BASIC RESPONSE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"success should be true\", function () {\r
+
+      \    pm.expect(response.success).to.eql(true);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"statusCode should be 200\", function () {\r
+
+      \    pm.expect(response.statusCode).to.eql(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"error should be null\", function () {\r
+
+      \    pm.expect(response.error).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      // =====================================\r
+
+      // DATA VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"data should exist\", function () {\r
+
+      \    pm.expect(response.data).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"trip id should exist\", function () {\r
+
+      \    pm.expect(response.data.id).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      // =====================================\r
+
+      // TRIP STATUS VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"trip status should be CANCELLED\", function () {\r
+
+      \    pm.expect(response.data.status).to.eql(\"CANCELLED\");\r
+
+      });\r
+
+      \r
+
+      // =====================================\r
+
+      // DRIVER VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"driver should exist\", function () {\r
+
+      \    pm.expect(response.data.driver).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"driver status should be BUSY\", function () {\r
+
+      \    pm.expect(response.data.driver.status).to.eql(\"BUSY\");\r
+
+      });\r
+
+      \r
+
+      // =====================================\r
+
+      // TRIP REQUEST VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"tripRequestNew should exist\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"startAddress should exist\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.startAddress).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"endAddress should exist\", function () {\r
+
+      \    pm.expect(response.data.tripRequestNew.endAddress).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      // =====================================\r
+
+      // BUSINESS LOGIC VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"trip should be inactive after cancellation\", function () {\r
+
+      \    pm.expect(response.data.active).to.eql(false);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"driverStartAddress should still exist (historical data)\", function () {\r
+
+      \    pm.expect(response.data.driverStartAddress).to.be.an(\"object\");\r
+
+      });\r
+
+      \r
+
+      // =====================================\r
+
+      // SCHEMA VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Response schema should be valid\", function () {\r
+
+      \r
+
+      \    const schema = {\r
+
+      \        type: \"object\",\r
+
+      \        required: [\"success\", \"statusCode\", \"data\", \"error\"],\r
+
+      \        properties: {\r
+
+      \r
+
+      \            success: { type: \"boolean\" },\r
+
+      \            statusCode: { type: \"number\" },\r
+
+      \r
+
+      \            data: {\r
+
+      \                type: \"object\",\r
+
+      \                required: [\r
+
+      \                    \"id\",\r
+
+      \                    \"tripRequestNew\",\r
+
+      \                    \"fareEstimateNew\",\r
+
+      \                    \"rider\",\r
+
+      \                    \"driver\",\r
+
+      \                    \"status\",\r
+
+      \                    \"active\"\r
+
+      \                ],\r
+
+      \                properties: {\r
+
+      \r
+
+      \                    id: { type: \"string\" },\r
+
+      \                    status: { type: \"string\" },\r
+
+      \                    active: { type: \"boolean\" },\r
+
+      \r
+
+      \                    driver: {\r
+
+      \                        type: \"object\",\r
+
+      \                        properties: {\r
+
+      \                            id: { type: \"string\" },\r
+
+      \                            status: { type: \"string\" },\r
+
+      \                            active: { type: \"boolean\" }\r
+
+      \                        }\r
+
+      \                    }\r
+
+      \                }\r
+
+      \            },\r
+
+      \r
+
+      \            error: { type: [\"null\"] }\r
+
+      \        }\r
+
+      \    };\r
+
+      \r
+
+      \    pm.response.to.have.jsonSchema(schema);\r
+
+      });\r
+
+      \r
+
+      // =====================================\r
+
+      // RESPONSE TIME VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"response time should be below 3000ms\", function () {\r
+
+      \    pm.expect(pm.response.responseTime).to.be.below(3000);\r
+
+      });"
+    language: text/javascript
+order: 6000

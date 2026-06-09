@@ -1,0 +1,724 @@
+$kind: http-request
+url: "{{baseUrl}}/trips_new/{{cTripId}}/status"
+method: PUT
+headers:
+  Authorization: "{{cDriver_Token}}"
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+        // "status": "ACCEPTED"
+        // "status": "PICKED"
+        // "status": "DROPPED"
+        "status": "ARRIVED",
+        "locationContext": {
+          "location": {
+            "lat": 20.9063,
+            "lng": 74.7698
+          },
+          "capturedAt": 1743065400000,
+          "accuracy": 10.5
+        }
+      }
+scripts:
+  - type: afterResponse
+    code: "// ==========================================\r
+
+      // PARSE RESPONSE\r
+
+      // ==========================================\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // COMMON UUID REGEX\r
+
+      // ==========================================\r
+
+      \r
+
+      const uuidRegex =\r
+
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // BASIC RESPONSE VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Status code should be 200\", function () {\r
+
+      \r
+
+      \    pm.expect(response.statusCode)\r
+
+      \        .to.eql(200);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Success should be true\", function () {\r
+
+      \r
+
+      \    pm.expect(response.success)\r
+
+      \        .to.eql(true);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Success should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.success)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Data should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Error should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.error)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TRIP VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Trip ID should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.id)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Trip status should be ARRIVED\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.status)\r
+
+      \        .to.eql(\"ARRIVED\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Trip active should be true\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.active)\r
+
+      \        .to.eql(true);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // DRIVER VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Driver should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Driver ID should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver.id)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Driver status should be BUSY\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver.status)\r
+
+      \        .to.eql(\"BUSY\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Driver active should be true\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver.active)\r
+
+      \        .to.eql(true);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Driver deleted should be false\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driver.deleted)\r
+
+      \        .to.eql(false);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // DRIVER START ADDRESS VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"DriverStartAddress should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverStartAddress)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"DriverStartAddress latitude should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverStartAddress.lat)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"DriverStartAddress longitude should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverStartAddress.lng)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"DriverStartAddress latitude should be valid\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverStartAddress.lat)\r
+
+      \        .to.be.within(-90, 90);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"DriverStartAddress longitude should be valid\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.driverStartAddress.lng)\r
+
+      \        .to.be.within(-180, 180);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // ARRIVED TIME VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"ArrivedTime should not be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.arrivedTime)\r
+
+      \        .to.not.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"ArrivedTime should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(response.data.arrivedTime)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // NULL FIELD VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"PickedTime should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.pickedTime)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"DroppedTime should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.droppedTime)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"WaitingStartAt should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.waitingStartAt)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"TripFare should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.tripFare)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // ACTUAL VALUES VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"ActualTime should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.actualTime)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"ActualTime should be 0\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.actualTime)\r
+
+      \        .to.eql(0);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"ActualFirstMile should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.actualFirstMile)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"ActualFirstMileDuration should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.actualFirstMileDuration)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // RIDER VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Rider should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.rider)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Rider ID should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.rider.id)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"RiderProfileId should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.rider.riderProfileId)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // DATETIME VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"CreatedAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(response.data.createdAtIST)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"UpdatedAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(response.data.updatedAtIST)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // BUSINESS LOGIC VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"ARRIVED trip should have driver assigned\", function () {\r
+
+      \r
+
+      \    if (response.data.status === \"ARRIVED\") {\r
+
+      \r
+
+      \        pm.expect(response.data.driver)\r
+
+      \            .to.not.eql(null);\r
+
+      \    }\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"ARRIVED trip should have arrivedTime\", function () {\r
+
+      \r
+
+      \    if (response.data.status === \"ARRIVED\") {\r
+
+      \r
+
+      \        pm.expect(response.data.arrivedTime)\r
+
+      \            .to.not.eql(null);\r
+
+      \    }\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"ARRIVED trip should not have pickedTime\", function () {\r
+
+      \r
+
+      \    if (response.data.status === \"ARRIVED\") {\r
+
+      \r
+
+      \        pm.expect(response.data.pickedTime)\r
+
+      \            .to.eql(null);\r
+
+      \    }\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"ARRIVED trip should not have droppedTime\", function () {\r
+
+      \r
+
+      \    if (response.data.status === \"ARRIVED\") {\r
+
+      \r
+
+      \        pm.expect(response.data.droppedTime)\r
+
+      \            .to.eql(null);\r
+
+      \    }\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // PERFORMANCE VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Response time should be below 3000ms\", function () {\r
+
+      \r
+
+      \    pm.expect(pm.response.responseTime)\r
+
+      \        .to.be.below(3000);\r
+
+      \r
+
+      });"
+    language: text/javascript
+order: 5000

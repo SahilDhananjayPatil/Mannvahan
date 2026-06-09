@@ -1,0 +1,374 @@
+$kind: http-request
+description: |-
+  Generated from cURL: curl -X POST http://localhost:8080/api/location/add \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjNTE3M2ViZC02MWE5LTQxZjAtODI3OS02N2Q0OTlmMGUwNmQifQ.tniilT4BpOIP_mfGs7sMsEIuV4wsJcV1ZeA3rkdDLz0" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Location",
+    "latitude": 12.9715987,
+    "longitude": 77.594566
+  }'
+url: "{{baseUrl}}/trip_requests_new"
+method: POST
+headers:
+  Authorization: "{{RIDER_TOKEN}}"
+body:
+  type: json
+  content: |
+    {
+        "startAddress": {
+            "shortName": "aadhar nagar",
+            "geoLocation": {
+                "lat": 20.918876688414926,
+                "lng": 74.75512973052511
+            }
+            
+        },
+        "endAddress": {
+            "shortName": "bus stand",
+            "geoLocation": {
+                "lat": 20.906394036221187,
+                "lng": 74.76976678092302
+            }
+        },
+        "vehicleType": "AUTO"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: "// Convert response to JSON\r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      // Get ID from response\r
+
+      const fareEstimateId = response.data.fareEstimatesNew[0].id;\r
+
+      \r
+
+      // Save into environment variable\r
+
+      pm.collectionVariables.set(\"cFareEstimateId\", fareEstimateId);\r
+
+      \r
+
+      console.log(\"fare Estimate ID:\", fareEstimateId);\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // STATUS CODE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Status code should be 201\", function () {\r
+
+      \    pm.response.to.have.status(201);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // BASIC RESPONSE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"success should be true\", function () {\r
+
+      \    pm.expect(response.success).to.eql(true);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"statusCode should be 201\", function () {\r
+
+      \    pm.expect(response.statusCode).to.eql(201);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"error should be null\", function () {\r
+
+      \    pm.expect(response.error).to.eql(null);\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // DATA OBJECT VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"data object should exist\", function () {\r
+
+      \    pm.expect(response.data).to.not.be.null;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Trip ID should exist\", function () {\r
+
+      \    pm.expect(response.data.id).to.not.be.undefined;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Trip ID should be string\", function () {\r
+
+      \    pm.expect(response.data.id).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // START ADDRESS VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Start address should exist\", function () {\r
+
+      \    pm.expect(response.data.startAddress).to.not.be.null;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Start address shortName should be string\", function () {\r
+
+      \    pm.expect(response.data.startAddress.shortName).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Start latitude should be number\", function () {\r
+
+      \    pm.expect(response.data.startAddress.geoLocation.lat).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Start longitude should be number\", function () {\r
+
+      \    pm.expect(response.data.startAddress.geoLocation.lng).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // END ADDRESS VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"End address should exist\", function () {\r
+
+      \    pm.expect(response.data.endAddress).to.not.be.null;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"End address shortName should be string\", function () {\r
+
+      \    pm.expect(response.data.endAddress.shortName).to.be.a(\"string\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"End latitude should be number\", function () {\r
+
+      \    pm.expect(response.data.endAddress.geoLocation.lat).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"End longitude should be number\", function () {\r
+
+      \    pm.expect(response.data.endAddress.geoLocation.lng).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // VEHICLE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Vehicle type should be AUTO\", function () {\r
+
+      \    pm.expect(response.data.vehicleType).to.eql(\"AUTO\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // DISTANCE & TIME VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Estimated distance should be number\", function () {\r
+
+      \    pm.expect(response.data.estimatedDistance).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Estimated time should be number\", function () {\r
+
+      \    pm.expect(response.data.estimatedTime).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Estimated first mile should be number\", function () {\r
+
+      \    pm.expect(response.data.estimatedFirstMile).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // FARE ESTIMATE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"fareEstimatesNew array should exist\", function () {\r
+
+      \    pm.expect(response.data.fareEstimatesNew).to.be.an(\"array\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"fareEstimatesNew should not be empty\", function () {\r
+
+      \    pm.expect(response.data.fareEstimatesNew.length).to.be.above(0);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Fare Estimate ID should exist\", function () {\r
+
+      \    pm.expect(response.data.fareEstimatesNew[0].id).to.not.be.undefined;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Minimum estimated fare should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimatesNew[0].minEstimatedFare).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Maximum estimated fare should be number\", function () {\r
+
+      \    pm.expect(response.data.fareEstimatesNew[0].maxEstimatedFare).to.be.a(\"number\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // DATE VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"createdAtIST should exist\", function () {\r
+
+      \    pm.expect(response.data.createdAtIST).to.not.be.null;\r
+
+      });\r
+
+      \r
+
+      pm.test(\"updatedAtIST should exist\", function () {\r
+
+      \    pm.expect(response.data.updatedAtIST).to.not.be.null;\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // HEADER VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Content-Type should be application/json\", function () {\r
+
+      \    pm.expect(pm.response.headers.get(\"Content-Type\"))\r
+
+      \        .to.include(\"application/json\");\r
+
+      });\r
+
+      \r
+
+      \r
+
+      // =====================================\r
+
+      // RESPONSE TIME VALIDATION\r
+
+      // =====================================\r
+
+      pm.test(\"Response time should be below 3000ms\", function () {\r
+
+      \    pm.expect(pm.response.responseTime).to.be.below(3000);\r
+
+      });"
+    language: text/javascript
+order: 1000

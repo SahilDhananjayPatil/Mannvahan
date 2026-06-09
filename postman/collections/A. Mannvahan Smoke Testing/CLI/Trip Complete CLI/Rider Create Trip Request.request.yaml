@@ -1,0 +1,901 @@
+$kind: http-request
+description: |-
+  Generated from cURL: curl -X POST http://localhost:8080/api/location/add \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjNTE3M2ViZC02MWE5LTQxZjAtODI3OS02N2Q0OTlmMGUwNmQifQ.tniilT4BpOIP_mfGs7sMsEIuV4wsJcV1ZeA3rkdDLz0" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Location",
+    "latitude": 12.9715987,
+    "longitude": 77.594566
+  }'
+url: "{{baseUrl}}/trip_requests_new"
+method: POST
+headers:
+  Authorization: "{{RIDER_TOKEN}}"
+body:
+  type: json
+  content: |
+    {
+        "startAddress": {
+            "shortName": "aadhar nagar",
+            "geoLocation": {
+                "lat": 20.918876688414926,
+                "lng": 74.75512973052511
+            }
+            
+        },
+        "endAddress": {
+            "shortName": "bus stand",
+            "geoLocation": {
+                "lat": 20.906394036221187,
+                "lng": 74.76976678092302
+            }
+        },
+        "vehicleType": "AUTO"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: beforeRequest
+    code: "let flow = pm.collectionVariables.get(\"flow\");\r
+
+      \r
+
+      if (!flow || flow === \"null\") {\r
+
+      \    flow = \"rider_cancel\";\r
+
+      \    pm.collectionVariables.set(\"flow\", flow);\r
+
+      }\r
+
+      \r
+
+      console.log(\"COMMON PRE FLOW:\", flow);"
+    language: text/javascript
+  - type: afterResponse
+    code: "// ==========================================\r
+
+      // PARSE RESPONSE\r
+
+      // ==========================================\r
+
+      \r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // COMMON UUID REGEX\r
+
+      // ==========================================\r
+
+      \r
+
+      const uuidRegex =\r
+
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // BASIC RESPONSE VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Status code should be 201\", function () {\r
+
+      \r
+
+      \    pm.expect(response.statusCode)\r
+
+      \        .to.eql(201);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Success should be true\", function () {\r
+
+      \r
+
+      \    pm.expect(response.success)\r
+
+      \        .to.eql(true);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Success should be Boolean\", function () {\r
+
+      \r
+
+      \    pm.expect(response.success)\r
+
+      \        .to.be.a(\"boolean\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Data should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Error should be null\", function () {\r
+
+      \r
+
+      \    pm.expect(response.error)\r
+
+      \        .to.eql(null);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // TRIP REQUEST VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Trip Request ID should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.id)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Vehicle type should be String\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.vehicleType)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Vehicle type should be AUTO\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.vehicleType)\r
+
+      \        .to.eql(\"AUTO\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Polyline should be String\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.gmapEncodedPolyline)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Polyline should not be empty\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.gmapEncodedPolyline.length)\r
+
+      \        .to.be.above(0);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // START ADDRESS VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"StartAddress should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.startAddress)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"StartAddress shortName should be String\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.startAddress.shortName)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Start latitude should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.startAddress.geoLocation.lat)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Start latitude should be valid\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.startAddress.geoLocation.lat)\r
+
+      \        .to.be.within(-90, 90);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Start longitude should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.startAddress.geoLocation.lng)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Start longitude should be valid\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.startAddress.geoLocation.lng)\r
+
+      \        .to.be.within(-180, 180);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // END ADDRESS VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"EndAddress should be Object\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.endAddress)\r
+
+      \        .to.be.an(\"object\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"EndAddress shortName should be String\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.endAddress.shortName)\r
+
+      \        .to.be.a(\"string\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"End latitude should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.endAddress.geoLocation.lat)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"End latitude should be valid\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.endAddress.geoLocation.lat)\r
+
+      \        .to.be.within(-90, 90);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"End longitude should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.endAddress.geoLocation.lng)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"End longitude should be valid\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.endAddress.geoLocation.lng)\r
+
+      \        .to.be.within(-180, 180);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // ESTIMATION VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Estimated Distance should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.estimatedDistance)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Estimated Distance should be greater than 0\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.estimatedDistance)\r
+
+      \        .to.be.above(0);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Estimated Time should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.estimatedTime)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Estimated Time should be greater than 0\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.estimatedTime)\r
+
+      \        .to.be.above(0);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Estimated First Mile should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.estimatedFirstMile)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // FARE ESTIMATE VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"fareEstimatesNew should be Array\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.fareEstimatesNew)\r
+
+      \        .to.be.an(\"array\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"fareEstimatesNew should not be empty\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.fareEstimatesNew.length)\r
+
+      \        .to.be.above(0);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      const fare =\r
+
+      response.data.fareEstimatesNew[0];\r
+
+      \r
+
+      pm.test(\"Fare Estimate ID should be valid UUID\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.id)\r
+
+      \        .to.match(uuidRegex);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Fare vehicleType should be AUTO\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.vehicleType)\r
+
+      \        .to.eql(\"AUTO\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Distance Fare should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.distanceFare)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Time Fare should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.timeFare)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"First Mile Fare should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.firstMileFare)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Platform Fee should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.platformFee)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Service Charge should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.serviceCharge)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Night Charge should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.nightCharge)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Discount should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.discount)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Minimum Estimated Fare should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.minEstimatedFare)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Maximum Estimated Fare should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.maxEstimatedFare)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Night Fare Multiplier should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.nightFareMultiplier)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Driver Estimated Payable should be Number\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.driverEstimatedPayable)\r
+
+      \        .to.be.a(\"number\");\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"trip_request_id should match Trip Request ID\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.trip_request_id)\r
+
+      \        .to.eql(response.data.id);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // DATETIME VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Fare createdAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(fare.createdAtIST)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Fare updatedAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(fare.updatedAtIST)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Trip createdAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(response.data.createdAtIST)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Trip updatedAtIST should be valid datetime\", function () {\r
+
+      \r
+
+      \    pm.expect(\r
+
+      \        Date.parse(response.data.updatedAtIST)\r
+
+      \    ).to.not.be.NaN;\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // BUSINESS LOGIC VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Minimum fare should not exceed maximum fare\", function () {\r
+
+      \r
+
+      \    pm.expect(fare.minEstimatedFare)\r
+
+      \        .to.be.at.most(fare.maxEstimatedFare);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Estimated distance should be realistic\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.estimatedDistance)\r
+
+      \        .to.be.within(1, 1000000);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      pm.test(\"Estimated time should be realistic\", function () {\r
+
+      \r
+
+      \    pm.expect(response.data.estimatedTime)\r
+
+      \        .to.be.within(1, 100000);\r
+
+      \r
+
+      });\r
+
+      \r
+
+      \r
+
+      // ==========================================\r
+
+      // PERFORMANCE VALIDATION\r
+
+      // ==========================================\r
+
+      \r
+
+      pm.test(\"Response time should be below 3000ms\", function () {\r
+
+      \r
+
+      \    pm.expect(pm.response.responseTime)\r
+
+      \        .to.be.below(3000);\r
+
+      \r
+
+      });"
+    language: text/javascript
+order: 1000
